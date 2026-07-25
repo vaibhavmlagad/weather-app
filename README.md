@@ -45,9 +45,35 @@ java -jar target/weather-app.jar
 mvn test
 ```
 
+## Run with Docker
+
+The `Dockerfile` is a multi-stage build: stage 1 builds the jar with Maven,
+stage 2 copies just the jar into a minimal `eclipse-temurin:17-jre-alpine`
+image, so the final image doesn't contain Maven or source code.
+
+**Build and run manually:**
+```bash
+docker build -t weather-app .
+docker run -d --name weather-app -p 8080:8080 weather-app
+```
+Then open http://localhost:8080
+
+**Or with Docker Compose (one command):**
+```bash
+docker compose up --build
+```
+Stop it with `docker compose down`.
+
+No environment variables, secrets, or database containers are required -
+the app only talks outbound to the public Open-Meteo APIs.
+
 ## Project structure
 
 ```
+Dockerfile                          # Multi-stage build: Maven -> minimal JRE image
+docker-compose.yml                  # One-command build + run
+.dockerignore
+
 src/main/java/com/example/weather/
 ├── WeatherApplication.java        # Spring Boot entry point
 ├── controller/

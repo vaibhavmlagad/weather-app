@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  weather-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: weather-app:latest
+    container_name: weather-app
+    ports:
+      - "8080:8080"
+    environment:
+      # No database and no API key needed - Open-Meteo is public.
+      # Example of how you'd override a Spring property if you ever needed to:
+      - SPRING_APPLICATION_NAME=weather-app
+    restart: unless-stopped

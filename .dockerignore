@@ -1,8 +1,9 @@
 target/
-*.class
-*.log
+.git/
+.github/
 .idea/
 *.iml
 .vscode/
 .DS_Store
-HELP.md
+*.log
+README.md
