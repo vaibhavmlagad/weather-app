@@ -1,0 +1,440 @@
+/* ==========================================================================
+   Weather Information App - custom styles
+   Design language: an "instrument panel" aesthetic - deep slate chrome
+   around a bright, condition-driven weather gauge card.
+   ========================================================================== */
+
+:root {
+    --ink: #0f1720;
+    --paper: #f5f7fa;
+    --panel: #ffffff;
+    --muted: #5b6b79;
+    --accent: #3a7ca5;
+    --accent-strong: #245a7a;
+    --border: rgba(15, 23, 32, 0.08);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+}
+
+[data-bs-theme="dark"] {
+    --ink: #eef2f6;
+    --paper: #0b1220;
+    --panel: #131c2c;
+    --muted: #93a2b3;
+    --accent: #6fb1d9;
+    --accent-strong: #8fc6e6;
+    --border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    transition: background-color 0.35s ease, color 0.35s ease;
+    min-height: 100vh;
+}
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ---------------- Top bar ---------------- */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+}
+
+.brand-icon {
+    color: var(--accent);
+    font-size: 1.4rem;
+}
+
+.theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--ink);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: rotate(-14deg);
+}
+
+/* ---------------- Hero / search ---------------- */
+
+.hero-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 2.9rem);
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+}
+
+.hero-subtitle {
+    color: var(--muted);
+    font-size: 1.02rem;
+    margin-bottom: 0;
+}
+
+.search-panel {
+    max-width: 720px;
+}
+
+.search-panel .form-control {
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--ink);
+    padding: 0.75rem 1.25rem;
+}
+
+.search-panel .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(58, 124, 165, 0.25);
+    border-color: var(--accent);
+}
+
+.btn-search {
+    border-radius: 999px;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-search:hover,
+.btn-search:focus {
+    background: var(--accent-strong);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-search:disabled {
+    opacity: 0.75;
+}
+
+.history-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.history-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-right: 0.2rem;
+}
+
+.history-chip {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.25rem 0.85rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.history-chip:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.error-alert {
+    max-width: 560px;
+    border-radius: var(--radius-md);
+}
+
+/* ---------------- Weather result card ---------------- */
+
+.result-wrapper {
+    max-width: 760px;
+}
+
+.weather-card {
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(15, 23, 32, 0.18);
+}
+
+.weather-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.location-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.7rem;
+    margin-bottom: 0.25rem;
+}
+
+.location-country,
+.location-coords {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.15rem;
+}
+
+.weather-icon-block {
+    text-align: center;
+}
+
+.weather-icon-block > i {
+    font-size: 3.2rem;
+    line-height: 1;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+.day-night-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    margin-top: 0.5rem;
+}
+
+.weather-headline {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1.4rem 0 1.6rem;
+}
+
+.temp-value {
+    font-family: var(--font-display);
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.weather-desc {
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.95;
+}
+
+.feels-like {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    width: 100%;
+}
+
+/* ---------------- Instrument grid: compass + metric tiles ---------------- */
+
+.instrument-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+@media (max-width: 576px) {
+    .instrument-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.compass-panel {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.compass-rose {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.compass-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 40px;
+    transform-origin: bottom center;
+    margin-left: -1px;
+    margin-top: -40px;
+    color: #ffd166;
+    transition: transform 0.5s ease;
+}
+
+.compass-needle i {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.1rem;
+}
+
+.compass-n, .compass-e, .compass-s, .compass-w {
+    position: absolute;
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.compass-n { top: 2px; left: 50%; transform: translateX(-50%); }
+.compass-s { bottom: 2px; left: 50%; transform: translateX(-50%); }
+.compass-e { right: 4px; top: 50%; transform: translateY(-50%); }
+.compass-w { left: 4px; top: 50%; transform: translateY(-50%); }
+
+.compass-caption {
+    text-align: center;
+}
+
+.compass-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.compass-label {
+    font-size: 0.75rem;
+    opacity: 0.85;
+}
+
+.metric-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+}
+
+@media (max-width: 480px) {
+    .metric-tiles {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.metric-tile {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.metric-tile i {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.metric-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-top: 0.15rem;
+}
+
+.metric-label {
+    font-size: 0.72rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.weather-card-footer {
+    margin-top: 1.4rem;
+    font-size: 0.8rem;
+    opacity: 0.85;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ---------------- Condition-based background themes ---------------- */
+
+.theme-sunny {
+    background: linear-gradient(135deg, #f6a733 0%, #f77f3d 55%, #e2572a 100%);
+}
+
+.theme-cloudy {
+    background: linear-gradient(135deg, #7c94a8 0%, #5c7284 55%, #46596a 100%);
+}
+
+.theme-rain {
+    background: linear-gradient(135deg, #2a6f8f 0%, #204d63 55%, #16323f 100%);
+}
+
+.theme-snow {
+    background: linear-gradient(135deg, #9fc6d9 0%, #7ba8c2 55%, #5c86a3 100%);
+}
+
+.theme-night {
+    background: linear-gradient(135deg, #2b2d63 0%, #1b1d42 55%, #0e0f26 100%);
+}
+
+/* ---------------- Footer ---------------- */
+
+.app-footer {
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+}
+
+.app-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.app-footer a:hover {
+    text-decoration: underline;
+}
