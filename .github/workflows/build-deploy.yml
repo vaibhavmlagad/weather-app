@@ -103,3 +103,41 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy-to-ec2:
+    name: Deploy to EC2
+    needs: publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: SSH in and redeploy container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          # Optional: only needed if your instance uses a non-default SSH port
+          port: ${{ secrets.EC2_SSH_PORT || 22 }}
+          script: |
+            set -e
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+
+            echo "Pulling $IMAGE ..."
+            docker pull "$IMAGE"
+
+            echo "Stopping old container (if any) ..."
+            docker stop weather-app || true
+            docker rm weather-app || true
+
+            echo "Starting new container ..."
+            docker run -d \
+              --name weather-app \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              "$IMAGE"
+
+            echo "Cleaning up dangling images ..."
+            docker image prune -f
+
+            echo "Deployment complete."
+            
