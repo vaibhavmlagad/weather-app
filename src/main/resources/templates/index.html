@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="light">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Information</title>
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/[email protected]/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons (used for weather icons + UI icons) -->
+    <!-- Bootstrap Icons: icon glyphs only. If this CDN is unreachable, icons
+         simply render blank - it never breaks the page layout, unlike a
+         full CSS framework would. -->
     <link href="https://cdn.jsdelivr.net/npm/[email protected]/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Google Fonts: Space Grotesk (display) + Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <!-- All layout, components, and theming below come from our own
+         self-contained stylesheet - no external CSS framework required,
+         so the page renders correctly even with no outbound network
+         access (e.g. a locked-down Docker/EC2 environment). -->
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
@@ -30,48 +34,47 @@
         </button>
     </header>
 
-    <main class="container py-4 py-md-5">
+    <main class="container">
 
         <!-- Hero / search section -->
-        <section class="text-center mb-4">
+        <section class="hero">
             <h1 class="hero-title">Weather Information</h1>
             <p class="hero-subtitle">Search any city worldwide for live conditions, powered by Open-Meteo.</p>
         </section>
 
-        <section class="search-panel mx-auto mb-4">
-            <form id="searchForm" th:action="@{/search}" method="post" class="row g-2 justify-content-center">
-                <div class="col-12 col-sm-8 col-md-6">
-                    <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        class="form-control form-control-lg"
-                        placeholder="Enter city name (e.g. London, Tokyo, Mumbai)"
-                        th:value="${searchedCity}"
-                        autocomplete="off"
-                        required>
-                </div>
-                <div class="col-12 col-sm-4 col-md-auto">
-                    <button id="searchBtn" type="submit" class="btn btn-search btn-lg w-100">
-                        <span id="searchBtnText"><i class="bi bi-search"></i> Search</span>
-                        <span id="searchSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    </button>
-                </div>
+        <section class="search-panel">
+            <form id="searchForm" th:action="@{/search}" method="post" class="search-row">
+                <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    class="city-input"
+                    placeholder="Enter city name (e.g. London, Tokyo, Mumbai)"
+                    th:value="${searchedCity}"
+                    autocomplete="off"
+                    required>
+                <button id="searchBtn" type="submit" class="btn-search">
+                    <span id="searchBtnText"><i class="bi bi-search"></i> Search</span>
+                    <span id="searchSpinner" class="spinner u-hidden" role="status" aria-hidden="true"></span>
+                </button>
             </form>
 
-            <!-- Recent search history (in-memory only) -->
-            <div class="history-chips mt-3" th:if="${history != null and !history.isEmpty()}">
+            <!-- Recent search history (in-memory only). Each chip carries its
+                 city name in a plain data-* attribute (never an inline event
+                 handler) - Thymeleaf disallows string variables inside
+                 on-event attributes like onclick, so click handling is wired
+                 up in script.js instead via event delegation. -->
+            <div class="history-chips" th:if="${history != null and !history.isEmpty()}">
                 <span class="history-label">Recent:</span>
-                <span class="history-chip" th:each="h : ${history}" th:text="${h}"
-                      th:onclick="'fillCity(\'' + ${h} + '\')'"></span>
+                <span class="history-chip" th:each="h : ${history}" th:text="${h}" th:attr="data-city=${h}"></span>
             </div>
         </section>
 
         <!-- Error message -->
-        <div class="alert alert-danger error-alert mx-auto" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert-error" role="alert" th:if="${error}" th:text="${error}"></div>
 
         <!-- Weather result card -->
-        <section th:if="${weather}" class="result-wrapper mx-auto">
+        <section th:if="${weather}" class="result-wrapper">
             <div class="weather-card" th:classappend="'theme-' + ${weather.backgroundTheme}">
 
                 <div class="weather-card-top">

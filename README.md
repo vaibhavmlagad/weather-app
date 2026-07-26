@@ -10,7 +10,7 @@ APIs. **No database. No API key.**
 - Spring Web (MVC) + Thymeleaf
 - Spring WebFlux's `WebClient` for HTTP calls (app itself stays a classic MVC app)
 - Jackson for JSON mapping
-- Bootstrap 5 + Bootstrap Icons (via CDN)
+- Self-contained custom CSS (no external CSS framework) + Bootstrap Icons webfont (via CDN, icons only)
 - Maven
 
 ## How it works

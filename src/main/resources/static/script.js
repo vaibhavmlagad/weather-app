@@ -11,7 +11,7 @@
 
     /** Applies the given theme ("light" | "dark") to the document and icon. */
     function applyTheme(theme) {
-        html.setAttribute("data-bs-theme", theme);
+        html.setAttribute("data-theme", theme);
         if (themeIcon) {
             themeIcon.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
         }
@@ -24,7 +24,7 @@
 
     if (themeToggle) {
         themeToggle.addEventListener("click", function () {
-            const current = html.getAttribute("data-bs-theme");
+            const current = html.getAttribute("data-theme");
             const next = current === "dark" ? "light" : "dark";
             applyTheme(next);
             window.localStorage.setItem(THEME_KEY, next);
@@ -46,8 +46,8 @@
                 return;
             }
             searchBtn.disabled = true;
-            searchBtnText.classList.add("d-none");
-            searchSpinner.classList.remove("d-none");
+            searchBtnText.classList.add("u-hidden");
+            searchSpinner.classList.remove("u-hidden");
         });
     }
 
@@ -65,11 +65,25 @@
         cityInput.focus();
     }
 
-    // Exposed globally so the inline th:onclick on history chips can call it.
-    window.fillCity = function (cityName) {
+    function fillCity(cityName) {
         if (cityInput) {
             cityInput.value = cityName;
             cityInput.focus();
         }
-    };
+    }
+
+    // ---------------- Recent-search chips ----------------
+    // Chips carry their city name in a data-city attribute (set server-side
+    // via th:attr) rather than an inline onclick handler, since Thymeleaf
+    // disallows string variables inside on-event attributes. Wired up here
+    // instead via plain event delegation on the container.
+    const historyContainer = document.querySelector(".history-chips");
+    if (historyContainer) {
+        historyContainer.addEventListener("click", function (event) {
+            const chip = event.target.closest(".history-chip");
+            if (chip && chip.dataset.city) {
+                fillCity(chip.dataset.city);
+            }
+        });
+    }
 })();

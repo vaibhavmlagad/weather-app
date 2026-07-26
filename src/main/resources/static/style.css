@@ -1,5 +1,10 @@
 /* ==========================================================================
    Weather Information App - custom styles
+   Fully self-contained: no Bootstrap CSS framework is required for layout,
+   buttons, forms, or alerts (only Bootstrap Icons' webfont is used, purely
+   for glyphs, via CDN). This keeps the page looking correct even in
+   locked-down networks where a CSS CDN might not load.
+
    Design language: an "instrument panel" aesthetic - deep slate chrome
    around a bright, condition-driven weather gauge card.
    ========================================================================== */
@@ -11,34 +16,55 @@
     --muted: #5b6b79;
     --accent: #3a7ca5;
     --accent-strong: #245a7a;
-    --border: rgba(15, 23, 32, 0.08);
+    --danger: #b3261e;
+    --danger-bg: #fdecea;
+    --danger-border: #f3c2bd;
+    --border: rgba(15, 23, 32, 0.10);
     --radius-lg: 20px;
     --radius-md: 14px;
+    --radius-pill: 999px;
     --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
     --font-body: 'Inter', 'Segoe UI', sans-serif;
+    --container-width: 760px;
 }
 
-[data-bs-theme="dark"] {
+[data-theme="dark"] {
     --ink: #eef2f6;
     --paper: #0b1220;
     --panel: #131c2c;
     --muted: #93a2b3;
     --accent: #6fb1d9;
     --accent-strong: #8fc6e6;
-    --border: rgba(255, 255, 255, 0.08);
+    --danger: #ff8a80;
+    --danger-bg: #2a1414;
+    --danger-border: #5c2a26;
+    --border: rgba(255, 255, 255, 0.10);
 }
 
 * {
     box-sizing: border-box;
 }
 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+}
+
+body {
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-body);
+    line-height: 1.5;
     transition: background-color 0.35s ease, color 0.35s ease;
     min-height: 100vh;
+}
+
+img, svg {
+    max-width: 100%;
+}
+
+.u-hidden {
+    display: none !important;
 }
 
 .app-shell {
@@ -47,12 +73,21 @@ body {
     min-height: 100vh;
 }
 
+/* Generic centered content container - replaces Bootstrap's .container */
+.container {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 3rem;
+}
+
 /* ---------------- Top bar ---------------- */
 
 .topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border);
 }
@@ -65,6 +100,7 @@ body {
     font-weight: 600;
     font-size: 1.15rem;
     letter-spacing: 0.01em;
+    white-space: nowrap;
 }
 
 .brand-icon {
@@ -73,6 +109,7 @@ body {
 }
 
 .theme-toggle {
+    flex: 0 0 auto;
     border: 1px solid var(--border);
     background: var(--panel);
     color: var(--ink);
@@ -93,55 +130,103 @@ body {
 
 /* ---------------- Hero / search ---------------- */
 
+.hero {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
 .hero-title {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2rem, 5vw, 2.9rem);
-    margin-bottom: 0.4rem;
+    font-size: clamp(1.9rem, 5vw, 2.7rem);
+    margin: 0 0 0.5rem;
     letter-spacing: -0.01em;
 }
 
 .hero-subtitle {
     color: var(--muted);
     font-size: 1.02rem;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 .search-panel {
-    max-width: 720px;
+    margin-bottom: 1.75rem;
 }
 
-.search-panel .form-control {
-    border-radius: 999px;
+/* Search row: input + button. Flex-wrap means it stacks cleanly on small
+   screens without needing any grid framework. */
+.search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+}
+
+.city-input {
+    flex: 1 1 320px;
+    max-width: 420px;
+    font-size: 1.05rem;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--border);
     background: var(--panel);
     color: var(--ink);
     padding: 0.75rem 1.25rem;
+    font-family: var(--font-body);
 }
 
-.search-panel .form-control:focus {
-    box-shadow: 0 0 0 0.2rem rgba(58, 124, 165, 0.25);
+.city-input::placeholder {
+    color: var(--muted);
+}
+
+.city-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(58, 124, 165, 0.25);
     border-color: var(--accent);
 }
 
 .btn-search {
-    border-radius: 999px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: var(--radius-pill);
     background: var(--accent);
     border: none;
     color: #fff;
+    font-family: var(--font-body);
     font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.75rem 1.75rem;
+    cursor: pointer;
     transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .btn-search:hover,
 .btn-search:focus {
     background: var(--accent-strong);
-    color: #fff;
     transform: translateY(-1px);
 }
 
 .btn-search:disabled {
     opacity: 0.75;
+    cursor: default;
+    transform: none;
+}
+
+/* Small spinner shown in the search button while a request is in flight */
+.spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .history-chips {
@@ -150,6 +235,7 @@ body {
     gap: 0.4rem;
     align-items: center;
     justify-content: center;
+    margin-top: 1rem;
 }
 
 .history-label {
@@ -161,33 +247,42 @@ body {
 .history-chip {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 0.25rem 0.85rem;
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.9rem;
     font-size: 0.85rem;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .history-chip:hover {
     background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
     transform: translateY(-1px);
 }
 
-.error-alert {
+.alert-error {
     max-width: 560px;
+    margin: 0 auto 1.5rem;
     border-radius: var(--radius-md);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: var(--danger);
+    padding: 0.85rem 1.1rem;
+    font-size: 0.95rem;
+    text-align: center;
 }
 
 /* ---------------- Weather result card ---------------- */
 
 .result-wrapper {
-    max-width: 760px;
+    max-width: var(--container-width);
+    margin: 0 auto;
 }
 
 .weather-card {
     border-radius: var(--radius-lg);
-    padding: 2rem;
+    padding: 1.75rem;
     color: #fff;
     position: relative;
     overflow: hidden;
@@ -205,8 +300,8 @@ body {
 .location-name {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.7rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.6rem;
+    margin: 0 0 0.3rem;
 }
 
 .location-country,
@@ -221,10 +316,11 @@ body {
 
 .weather-icon-block {
     text-align: center;
+    flex: 0 0 auto;
 }
 
 .weather-icon-block > i {
-    font-size: 3.2rem;
+    font-size: 3rem;
     line-height: 1;
     display: block;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
@@ -237,7 +333,7 @@ body {
     font-size: 0.75rem;
     background: rgba(255, 255, 255, 0.2);
     padding: 0.15rem 0.6rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     margin-top: 0.5rem;
 }
 
@@ -246,12 +342,12 @@ body {
     align-items: baseline;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin: 1.4rem 0 1.6rem;
+    margin: 1.4rem 0 1.5rem;
 }
 
 .temp-value {
     font-family: var(--font-display);
-    font-size: 3.4rem;
+    font-size: 3.1rem;
     font-weight: 700;
     line-height: 1;
 }
@@ -272,12 +368,12 @@ body {
 
 .instrument-grid {
     display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 1.25rem;
+    grid-template-columns: 150px 1fr;
+    gap: 1rem;
     align-items: stretch;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 560px) {
     .instrument-grid {
         grid-template-columns: 1fr;
     }
@@ -296,8 +392,8 @@ body {
 
 .compass-rose {
     position: relative;
-    width: 96px;
-    height: 96px;
+    width: 92px;
+    height: 92px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.5);
     background: rgba(255, 255, 255, 0.08);
@@ -308,10 +404,10 @@ body {
     top: 50%;
     left: 50%;
     width: 2px;
-    height: 40px;
+    height: 38px;
     transform-origin: bottom center;
     margin-left: -1px;
-    margin-top: -40px;
+    margin-top: -38px;
     color: #ffd166;
     transition: transform 0.5s ease;
 }
@@ -354,7 +450,7 @@ body {
 .metric-tiles {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.7rem;
+    gap: 0.65rem;
 }
 
 @media (max-width: 480px) {
@@ -366,7 +462,7 @@ body {
 .metric-tile {
     background: rgba(255, 255, 255, 0.14);
     border-radius: var(--radius-md);
-    padding: 0.75rem;
+    padding: 0.7rem;
     text-align: center;
 }
 
@@ -378,12 +474,12 @@ body {
 .metric-value {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     margin-top: 0.15rem;
 }
 
 .metric-label {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     opacity: 0.85;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -437,4 +533,19 @@ body {
 
 .app-footer a:hover {
     text-decoration: underline;
+}
+
+/* ---------------- Small screens ---------------- */
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1.75rem 1rem 2.25rem;
+    }
+    .btn-search {
+        width: 100%;
+    }
+    .city-input {
+        max-width: none;
+        flex-basis: 100%;
+    }
 }

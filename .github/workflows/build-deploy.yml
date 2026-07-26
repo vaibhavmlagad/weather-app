@@ -18,6 +18,8 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.pom.outputs.version }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -28,6 +30,13 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
+          
+      - name: Read project version from pom.xml
+        id: pom
+        run: |
+          VERSION=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
+          echo "Resolved project version: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Build and run tests
         run: mvn -B clean verify
@@ -72,9 +81,6 @@ jobs:
         if: always()
         run: docker rm -f weather-app-ci || true
 
-  # Publishes the image to Docker Hub. Only runs on a real push to main
-  # (not on PRs, and not on workflow_dispatch from a branch other than
-  # main) so forks/PRs never need Docker Hub credentials to pass CI.
   publish:
     name: Publish to Docker Hub
     needs: [ build, docker ]
@@ -100,7 +106,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
