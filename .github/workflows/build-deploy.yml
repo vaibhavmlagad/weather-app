@@ -1,6 +1,5 @@
 name: Build and Deploy Weather App
-
-# Runs on every push/PR to main, and can also be triggered manually.
+# Runs on every push/PR to master, and can also be triggered manually.
 on:
   push:
     branches: [ "master" ]
@@ -112,7 +111,7 @@ jobs:
 
   deploy-to-ec2:
     name: Deploy to EC2
-    needs: publish
+    needs: [ build, publish ]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     steps:
@@ -122,11 +121,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # Optional: only needed if your instance uses a non-default SSH port
           port: ${{ secrets.EC2_SSH_PORT || 22 }}
           script: |
             set -e
-            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}"
 
             echo "Pulling $IMAGE ..."
             docker pull "$IMAGE"
